@@ -1,0 +1,625 @@
+---
+include:
+  - docassemble.AssemblyLine:assembly_line.yml
+#  - docassemble.ALMassachusetts:al_massachusetts.yml
+---
+metadata:
+  title: |
+    Court ADA Accomodations Form
+  short title: |
+    ADA Accomodations Form
+  tags:
+    - Other
+  authors:
+    - Jessica Vandervort
+---
+mandatory: True
+comment: |
+  Global interview metadata
+variable name: interview_metadata["courtrequestforadaaccomodation"]
+data:
+  al_weaver_version: "1.7.0"
+  generated on: "2022-11-13"
+  title: >-
+    Court ADA Accomodations Form
+  short title: >-
+    ADA Accomodations Form
+  description: |-
+    If you will need accommodations or help at the courthouse, or cannot make it to court 
+    because of your needs, you must fill out the questions and then send in this form.
+  original_form: >-
+    
+  allowed courts: 
+    - "Boston Municipal Court"
+    - "District Court"
+    - "Housing Court"
+    - "Juvenile Court"
+    - "Land Court"
+    - "Probate and Family Court"
+    - "Superior Court"
+  categories:
+    - "accessibility"
+  typical role: "unknown"
+  generate download screen: True
+---
+code: |
+  interview_metadata['main_interview_key'] =  'courtrequestforadaaccomodation'
+---
+code: |
+  # This controls the default country and list of states in address field questions
+  AL_DEFAULT_COUNTRY = "US"
+---
+code: |
+  # This controls the default state in address field questions
+  AL_DEFAULT_STATE = "MA"
+---
+code: |
+  github_repo_name =  'docassemble-Courtrequestforadaaccomodation'
+---
+code: |
+  interview_short_title = "Ask the court for ADA Accommodations"
+---
+code: |
+  al_form_type = "other" 
+---
+objects:
+  - users: ALPeopleList.using(ask_number=True,target_number=1)
+---
+sections:
+  - review_courtrequestforadaaccomodation: Review your answers
+---
+#################### Interview order #####################
+comment: |
+  Controls order and branching logic for questions specific to this form
+id: interview_order_courtrequestforadaaccomodation
+code: |
+  # Set the allowed courts for this interview
+  allowed_courts = interview_metadata["courtrequestforadaaccomodation"]["allowed courts"]
+  nav.set_section("review_courtrequestforadaaccomodation")
+  
+  Welcome
+  Text1
+  Check_Box9
+  set_progress(25)
+  Continue
+  Check_Box14
+  Text12
+  interview_order_courtrequestforadaaccomodation = True
+---
+###################### Main order ######################
+comment: |
+  This block includes the logic for standalone interviews.
+  Delete mandatory: True to include in another interview
+mandatory: True
+code: |
+  al_intro_screen
+  courtrequestforadaaccomodation_intro
+  interview_order_courtrequestforadaaccomodation
+  signature_date
+  # Store anonymous data for analytics / statistics
+  store_variables_snapshot(
+      persistent=True,
+      data={
+          "zip": showifdef("users[0].address.zip"),
+          "reached_interview_end": True,
+      },
+  )
+  courtrequestforadaaccomodation_download
+---
+comment: |
+  This question is used to introduce your interview. Please customize
+id: Court_ADA_Accomodations_Form
+continue button field: courtrequestforadaaccomodation_intro
+question: |
+  Court ADA Accomodations Form
+subquestion: |
+  If you have been called to court, and will need accommodations or help at any point in the process, you must fill in this form and send it to the court's ADA Coordinator (we will give you this information at the end of this survey.) This software will help by filling in the form with your answers to the questions. Please answer honestly, and fully. 
+  
+  The finished form must be turned in at least 72 hours before your court date.
+---
+id: Welcome
+question: |
+  Before we begin... 
+subquestion: |
+  Please take some time to answer the questions on the next few pages. You will be able to change your answers at the end if you make a mistake. 
+continue_button_field: Welcome
+---
+id: First things first... 
+question: |
+   Please tell us below if you are the person who will need the accommodations, or if you      are helping that person. 
+subquestion: |
+  Please tell us if you are the one who needs the accommodation. 
+fields: 
+  - "Are you the person who needs accommodations?": needs_accommodation  
+    choices: 
+    - yes
+    - no 
+  - "What is your relationship to the person who needs accommodations?": Text28
+    show if: 
+      variable: needs_accommodation
+      is: yes
+continue_button_field: thank you! 
+---
+id: General information
+question: |
+  General information
+subquestion: |
+  These questions are about the person who needs accommodations. Unless you answered "Yes" to the last question, these questions are about you.
+fields:
+  - "Your Name:": Text2
+    maxlength: 20
+  - "Your Phone Number:": Text3
+    maxlength: 32
+  - "Your Email:": Text4
+    maxlength: 32
+  - "Your Address:": Text5
+    maxlength: 82
+  - "Today's Date:": Text1
+    datatype: date
+
+---
+id: Court Information
+question: |
+  These questions are about the Court Case you have been called to.
+subquestion: |
+  Please tell us a bit about why you were called to court, and where you were called:
+fields:
+  - "I am a Juror": Check_Box9
+    datatype: yesno
+  - "I am an Attorney/Legal Staff": Check_Box7
+    datatype: yesno
+  - "I am a Witness": Check_Box8
+    datatype: yesno
+  - "I am a Party in the Case": Check_Box6
+    datatype: yesno
+  - "I am something else (explain):": Text10
+    maxlength: 44
+  - "Name of Court:": Text11
+    input type: dropdown
+    choices:
+      - Attleboro District Court
+      - Attleboro Juvenile Court
+      - Ayer District Court
+      - Barnstable County Superior Court
+      - Barnstable District Court
+      - Barnstable Juvenile Court
+      - Barnstable Probate and Family Court
+      - Belchertown Juvenile Court
+      - Berkshire County Superior Court
+      - Berkshire Probate and Family Court
+      - Boston Juvenile Court 
+      - Brighton Division, Boston Municipal Court 
+      - Bristol County Superior Court
+      - Bristol County Superior Court-Fall River 
+      - Bristol County Superior Court-New Bedford 
+      - Bristol Probate and Family Court 
+      - Brockton District Court 
+      - Brockton Juvenile Court
+      - Brockton Probate and Family Court 
+      - Brookline District Court
+      - Cambridge District Court
+      - Cambridge Juvenile Court
+      - Central Division, Boston Municipal Court
+      - Central Housing Court - Dudley Session
+      - Central Housing Court - Leominster Session
+      - Central Housing Court - Marlborough Session
+      - Central Housing Court - Worcester Session
+      - Charlestown Division, Boston Municipal Court
+      - Chelsea District Court
+      - Chelsea Juvenile Court
+      - Chicopee District Court
+      - Clinton District Court
+      - Concord District Court
+      - Dedham District Court
+      - Dedham Juvenile Court
+      - Dorchester Division, Boston Municipal Court
+      - Dorchester Juvenile Court
+      - Dudley District Court
+      - Dudley Juvenile Court
+      - Dukes County Superior Court
+      - Dukes Probate and Family Court
+      - East Boston Division, Boston Municipal Court
+      - East Brookfield District Court
+      - Eastern Hampshire District Court
+      - Eastern Housing Court
+      - Eastern Housing Court - Chelsea Session
+      - Eastern Housing Court - Middlesex Session
+      - Edgartown District Court
+      - Edgartown Juvenile Court
+      - Essex County Superior Court
+      - Essex County Superior Court - Lawrence 
+      - Essex County Superior Court - Newburyport
+      - Essex Probate and Family Court
+      - Fall River District Court
+      - Fall River Juvenile Court
+      - Fall River Probate and Family Court
+      - Falmouth District Court
+      - Falmouth Juvenile Court
+      - Fitchburg District Court
+      - Fitchburg Juvenile Court
+      - Framingham District Court
+      - Framingham Juvenile Court
+      - Franklin County Superior Court
+      - Franklin Probate and Family Court
+      - Gardner District Court
+      - Gloucester District Court
+      - Great Barrington Juvenile Court
+      - Greenfield District Court
+      - Greenfield Juvenile Court
+      - Hadley Juvenile Court
+      - Hampden County Superior Court
+      - Hampden Probate and Family Court
+      - Hampshire County Superior Court 
+      - Hampshire Probate and Family Court
+      - Haverhill District Court
+      - Hingham District Court 
+      - Hingham Juvenile Court
+      - Holyoke District Court
+      - Holyoke Juvenile Court
+      - Ipswich District Court
+      - Lawrence District Court
+      - Lawrence Juvenile Court
+      - Lawrence Probate and Family Court
+      - Leominster District Court
+      - Lowell District Court
+      - Lowell Juvenile Court
+      - Lynn District Court
+      - Lynn Juvenile Court
+      - Malden District Court
+      - Marlborough District Court
+      - Metro South Housing Court - Brockton Session
+      - Metro South Housing Court - Canton Session
+      - Middlesex County Superior Court
+      - Middlesex County Superior Court - Lowell
+      - Middlesex Probate and Family Court North - Lowell
+      - Middlesex Probate and Family Court South - Woburn
+      - Milford District Court
+      - Milford Juvenile Court
+      - Nantucket County Superior Court
+      - Nantucket District Court
+      - Nantucket Juvenile Court
+      - Nantucket Probate and Family Court
+      - New Bedford District Court
+      - New Bedford Juvenile Court
+      - New Bedford Probate and Family Court
+      - Newburyport District Court
+      - Newburyport Juvenile Court
+      - Newton District Court
+      - Norfolk County Superior Court
+      - Norfolk Probate and Family Court
+      - North Adams Juvenile Court
+      - Northampton District Court
+      - Northeast Housing Court - Lawrence Session
+      - Northeast Housing Court - Lowell Session
+      - Northeast Housing Court - Lynn Session
+      - Northeast Housing Court - Salem Session
+      - Northeast Housing Court - Woburn Session
+      - Northern Berkshire District Court
+      - Orange District Court
+      - Orange Juvenile Court
+      - Orleans District Court
+      - Orleans Juvenile Court
+      - Palmer District Court
+      - Palmer Juvenile Court
+      - Peabody District Court
+      - Pittsfield District Court
+      - Pittsfield Juvenile Court
+      - Plymouth County Superior Court
+      - Plymouth County Superior Court - Brockton
+      - Plymouth District Court
+      - Plymouth Juvenile Court
+      - Plymouth Probate and Family Court
+      - Quincy District Court
+      - Quincy Juvenile Court
+      - Roxbury Division, Boston Municipal Court
+      - Salem District Court
+      - Salem Juvenile Court
+      - Somerville District Court
+      - South Boston Division, Boston Municipal Court
+      - Southeast Housing Court - Fall River
+      - Southeast Housing Court - New Bedford Session
+      - Southeast Housing Court - Plymouth Session
+      - Southeast Housing Court - Taunton Session
+      - Southeast Housing Court - Barnstable Session
+      - Southern Berkshire District Court
+      - Springfield District Court
+      - Springfield Juvenile Court
+      - Stoughton District Court
+      - Stoughton Juvenile Court
+      - Suffolk County Superior Court
+      - Suffolk Probate and Family Court
+      - Taunton District Court
+      - Taunton Juvenile Court
+      - Uxbridge District Court
+      - Waltham District Court
+      - Waltham Juvenile Court
+      - Warhead District Court
+      - Warhead Juvenile Court
+      - West Roxbury Division, Boston Municipal Court
+      - West Roxbury Juvenile Court
+      - Westborough District Court
+      - Western Housing Court - Greenfield Session
+      - Western Housing Court - Hadley Session
+      - Western Housing Court - Pittsfield Session
+      - Western Housing Court - Springfield Session
+      - Westfield District Court
+      - Winchendon District Court
+      - Woburn District Court
+      - Worcester County Superior Court
+      - Worcester District Court
+      - Worcester Juvenile Court
+      - Worcester Probate and Family Court
+      - Wrentham District Court
+  - "What date have you been called to court?:": Text12
+    datatype: date
+  - "What is your case name and docket number? i.e. Jones v. Smith 12345": Text13
+    maxlength: 36
+---
+id: Continue
+question: |
+  Continue
+subquestion: |
+  You are doing great! Almost done!
+continue button field: Continue
+---
+id: Accommodations
+question: |
+  Accommodations
+subquestion: |
+  Tell us about what accommodations you might need:
+fields:
+  - "I need physical accommodations (like access to a parking lot, entrance, restroom, elevator, court room, etc.)": Check_Box14
+    datatype: yesno
+  - "Assistive Listening Devices": Check_Box15
+    datatype: yesno
+  - "I need Large Print": Check_Box20
+    datatype: yesno
+  - "I need Digital Audio Reading": Check_Box16
+    datatype: yesno
+  - "I need a Sign Language Interpreter": Check_Box19
+    datatype: yesno
+  - "I need translating/CART (Communication Access Real-Time Translation)": Check_Box21
+    datatype: yesno
+  - "I need some other assistance": Check_Box17
+    datatype: yesno
+  - "The accommodation I need:": Text22
+    maxlength: 39
+  - "Why I need Accommodations:": Text26
+    input type: area
+  - "I need something else": Check_Box18
+    datatype: yesno
+---
+id: All done
+question: |
+  All done!
+subquestion: |
+  Please sign your name below (if you are filling out the form for someone else, please sign YOUR name). Please add the day/time you need the accommodations, and the case name and docket number again.
+fields:
+  - "Case Name & Docket Number:": Text12
+    maxlength: 20
+  - "Day and time needed:": Group25
+    maxlength: 24
+  - "My Signature:": Text27
+    maxlength: 37
+---
+id: preview courtrequestforadaaccomodation
+question: |
+  Preview your form before you sign it
+subquestion: |
+  Here is a preview of the form you will sign on the next page.   
+  
+  ${ al_court_bundle.as_pdf(key='preview') }
+
+  Click the image to open it in a new tab. Click the "Edit answers" button
+  to edit your answers.
+
+  ${ action_button_html(url_action('review_courtrequestforadaaccomodation'), label='Edit answers', color='info') }
+  
+  Remember to come back to this window to continue and sign your form.
+continue button field: courtrequestforadaaccomodation_preview_question    
+---
+code: |
+  signature_fields = []
+---
+code: |
+  # This is a placeholder for the addresses that will be searched
+  # for matching address to court. Edit if court venue is based on 
+  # a different address than the user's
+  addresses_to_search = [user.address for user in users]
+---
+id: courtrequestforadaaccomodation review screen
+event: review_courtrequestforadaaccomodation
+question: |
+  Review your answers
+review:
+  - Edit: Text1
+    button: |
+      **Your Name:**:
+      ${ Text1 }
+  - Edit: Text2
+    button: |
+      **Asking Date:**:
+      ${ Text2 }
+  - Edit: Text3
+    button: |
+      **Your Phone Number:**:
+      ${ Text3 }
+  - Edit: Text4
+    button: |
+      **Your Email:**:
+      ${ Text4 }
+  - Edit: Text5
+    button: |
+      **Your Address:**:
+      ${ Text5 }
+  - Edit: Check_Box9
+    button: |
+      **I am a Juror**:
+      ${ word(yesno(Check_Box9)) }
+  - Edit: Check_Box7
+    button: |
+      **I am an Attorney/Legal Staff**:
+      ${ word(yesno(Check_Box7)) }
+  - Edit: Check_Box8
+    button: |
+      **I am a Witness**:
+      ${ word(yesno(Check_Box8)) }
+  - Edit: Check_Box6
+    button: |
+      **I am a Party in the Case**:
+      ${ word(yesno(Check_Box6)) }
+  - Edit: Text10
+    button: |
+      **I am something else (explain):**:
+      ${ Text10 }
+  - Edit: Text11
+    button: |
+      **Name of Court:**:
+      ${ Text11 }
+  - Edit: Text13
+    button: |
+      **Court Date:**:
+      ${ Text13 }
+  - Edit: Text12
+    button: |
+      **Case Name & Docket Number:**:
+      ${ Text12 }
+  - Edit: Check_Box14
+    button: |
+      **I need physical accommodations (like access to a parking lot, entrance, restroom, elevator, court room, etc.)**:
+      ${ word(yesno(Check_Box14)) }
+  - Edit: Check_Box15
+    button: |
+      **I need some other assistance**:
+      ${ word(yesno(Check_Box15)) }
+  - Edit: Check_Box20
+    button: |
+      **I need Large Print**:
+      ${ word(yesno(Check_Box20)) }
+  - Edit: Check_Box16
+    button: |
+      **I need Digital Audio Reading**:
+      ${ word(yesno(Check_Box16)) }
+  - Edit: Check_Box19
+    button: |
+      **I need a Sign Language Interpreter**:
+      ${ word(yesno(Check_Box19)) }
+  - Edit: Check_Box21
+    button: |
+      **I need translating/CART (Communication Access Real-Time Translation)**:
+      ${ word(yesno(Check_Box21)) }
+  - Edit: Check_Box17
+    button: |
+      **Assistive Listening Devices**:
+      ${ word(yesno(Check_Box17)) }
+  - Edit: Text22
+    button: |
+      **The accommodation I need:**:
+      ${ Text22 }
+  - Edit: Check_Box18
+    button: |
+      **I need something else**:
+      ${ word(yesno(Check_Box18)) }
+  - Edit: Group25
+    button: |
+      **Day and time needed:**:
+      ${ Group25 }
+  - Edit: Text23
+    button: |
+      **Case Name:**:
+      ${ Text23 }
+  - Edit: Text24
+    button: |
+      **Docket Number:**:
+      ${ Text24 }
+  - Edit: Text26
+    button: |
+      **Why I need Accommodations:**:
+      > ${ single_paragraph(Text26) }
+  - Edit: Text27
+    button: |
+      **My Signature:**:
+      ${ Text27 }
+  - Edit: Text28
+    button: |
+      **If you are not the person needing accommodations, what is your name?**:
+      ${ Text28 }
+---
+event: courtrequestforadaaccomodation_download
+question: |
+  All done
+subquestion: |
+  Thank you ${users}. Your form is ready to download and deliver.
+  
+  View, download and send your form below. Click the "Edit answers" button to fix any mistakes.
+
+  ${ action_button_html(url_action('review_courtrequestforadaaccomodation'), label='Edit answers', color='info') }
+  
+  
+  ${ al_user_bundle.download_list_html() }
+  
+
+  ${ al_user_bundle.send_button_html(show_editable_checkbox=False) }
+
+progress: 100
+---
+# ALDocument objects specify the metadata for each template
+objects:
+  - courtrequestforadaaccomodation_Post_interview_instructions: ALDocument.using(title="Instructions", filename="courtrequestforadaaccomodation_next_steps.docx", enabled=True, has_addendum=False, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+  - courtrequestforadaaccomodation_attachment: ALDocument.using(title="Court ADA Accomodations Form", filename="courtrequestforadaaccomodation", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+---
+# Bundles group the ALDocuments into separate downloads, such as for court and for the user
+objects:
+  - al_user_bundle: ALDocumentBundle.using(elements=[courtrequestforadaaccomodation_Post_interview_instructions, courtrequestforadaaccomodation_attachment], filename="courtrequestforadaaccomodation", title="All forms to download for your records", enabled=True)
+  - al_court_bundle: ALDocumentBundle.using(elements=[courtrequestforadaaccomodation_attachment],  filename="courtrequestforadaaccomodation", title="All forms to deliver to court", enabled=True)
+---
+# Each attachment defines a key in an ALDocument. We use `i` as the placeholder here so the same template is 
+# used for "preview" and "final" keys, and logic in the template checks the value of 
+# `i` to show or hide the user's signature
+attachments:
+  - name: Post-interview-Instructions
+    filename: courtrequestforadaaccomodation_next_steps
+    docx template file: courtrequestforadaaccomodation_next_steps.docx
+    variable name: courtrequestforadaaccomodation_Post_interview_instructions[i]
+  - name: courtrequestforadaaccomodation
+    filename: courtrequestforadaaccomodation
+    variable name: courtrequestforadaaccomodation_attachment[i]
+    skip undefined: True
+    pdf template file: courtrequestforadaaccomodation.pdf
+    fields:
+      - "Text1": ${ Text1 }
+      - "Text2": ${ Text2 }
+      - "Text3": ${ Text3 }
+      - "Text4": ${ Text4 }
+      - "Text5": ${ Text5 }
+      - "Check Box9": ${ Check_Box9 }
+      - "Check Box7": ${ Check_Box7 }
+      - "Check Box8": ${ Check_Box8 }
+      - "Check Box6": ${ Check_Box6 }
+      - "Text10": ${ Text10 }
+      - "Text11": ${ Text11 }
+      - "Text13": ${ Text13.format() }
+      - "Text12": ${ Text12 }
+      - "Check Box14": ${ Check_Box14 }
+      - "Check Box15": ${ Check_Box15 }
+      - "Check Box20": ${ Check_Box20 }
+      - "Check Box16": ${ Check_Box16 }
+      - "Check Box19": ${ Check_Box19 }
+      - "Check Box21": ${ Check_Box21 }
+      - "Check Box17": ${ Check_Box17 }
+      - "Text22": ${ Text22 }
+      - "Check Box18": ${ Check_Box18 }
+      - "Group25": ${ Group25 }
+      - "Group25": ${ Group25 }
+      - "Text23": ${ Text23 }
+      - "Text24": ${ Text24 }
+      - "Text26": ${ attachment_name.safe_value("Text26") }
+      - "Text27": ${ Text27 }
+      - "Text28": ${ Text28 }
+---
+code: |
+  courtrequestforadaaccomodation_attachment.overflow_fields["Text26"].overflow_trigger = 595
+  courtrequestforadaaccomodation_attachment.overflow_fields["Text26"].label = "Why I need Accommodations:"
+  courtrequestforadaaccomodation_attachment.overflow_fields.gathered = True
+
+
