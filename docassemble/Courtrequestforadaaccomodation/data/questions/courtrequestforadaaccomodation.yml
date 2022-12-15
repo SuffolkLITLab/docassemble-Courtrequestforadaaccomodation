@@ -1,7 +1,7 @@
 ---
 include:
   - docassemble.AssemblyLine:assembly_line.yml
-#  - docassemble.ALMassachusetts:al_massachusetts.yml
+  #- docassemble.ALMassachusetts:al_massachusetts.yml
 ---
 metadata:
   title: |
@@ -77,13 +77,24 @@ code: |
   allowed_courts = interview_metadata["courtrequestforadaaccomodation"]["allowed courts"]
   nav.set_section("review_courtrequestforadaaccomodation")
   
-  Welcome
+  understood_welcome
+  welcome
+  needs_accommodation 
   Text1
+  court_data
+  Text11
   Check_Box9
   set_progress(25)
   Continue
   Check_Box14
   Text12
+  Text13
+  Text26
+  Text23
+  Text24
+  #Group25
+  Text27
+  #court_instructions
   interview_order_courtrequestforadaaccomodation = True
 ---
 ###################### Main order ######################
@@ -92,15 +103,13 @@ comment: |
   Delete mandatory: True to include in another interview
 mandatory: True
 code: |
-  al_intro_screen
   courtrequestforadaaccomodation_intro
   interview_order_courtrequestforadaaccomodation
-  signature_date
   # Store anonymous data for analytics / statistics
   store_variables_snapshot(
       persistent=True,
       data={
-          "zip": showifdef("users[0].address.zip"),
+          
           "reached_interview_end": True,
       },
   )
@@ -113,67 +122,89 @@ continue button field: courtrequestforadaaccomodation_intro
 question: |
   Court ADA Accomodations Form
 subquestion: |
-  If you have been called to court, and will need accommodations or help at any point in the process, you must fill in this form and send it to the court's ADA Coordinator (we will give you this information at the end of this survey.) This software will help by filling in the form with your answers to the questions. Please answer honestly, and fully. 
+  If you are headed to court and will need help or accommodations, you must send a form to the court's ADA Coordinator. This software will help by filling in the form with your answers to the questions. At the end you will be able to print out the completed form to turn in. Please make sure to answer all the questions.
   
-  The finished form must be turned in at least 72 hours before your court date.
+  You must turn in the finished form at least 72 hours before your court date.
+fields: 
+ - "Do you understand what to do?": understood_welcome
+   choices: 
+   - Yes  
+   - No   
+   required: true
+validation code: |
+  if understood_welcome == "No": validation_error("Please go back and read the rules again.")
 ---
 id: Welcome
 question: |
   Before we begin... 
 subquestion: |
   Please take some time to answer the questions on the next few pages. You will be able to change your answers at the end if you make a mistake. 
-continue_button_field: Welcome
+continue button field: welcome
 ---
-id: First things first... 
+id: needs_accommodation 
 question: |
-   Please tell us below if you are the person who will need the accommodations, or if you      are helping that person. 
+  Are you the person who will need the accommodations, or are you are helping that person?
 subquestion: |
   Please tell us if you are the one who needs the accommodation. 
 fields: 
   - "Are you the person who needs accommodations?": needs_accommodation  
     choices: 
-    - yes
-    - no 
-  - "What is your relationship to the person who needs accommodations?": Text28
+    - Yes, I am. 
+    - No, I am helping the person who needs accommodations.
+  - "How are you related to the person who needs accommodations?": Text28
     show if: 
       variable: needs_accommodation
-      is: yes
-continue_button_field: thank you! 
+      is: No, I am helping the person who needs accommodations.
 ---
 id: General information
 question: |
   General information
 subquestion: |
-  These questions are about the person who needs accommodations. Unless you answered "Yes" to the last question, these questions are about you.
+  These questions are about the person who needs accommodations. 
 fields:
-  - "Your Name:": Text2
-    maxlength: 20
-  - "Your Phone Number:": Text3
-    maxlength: 32
-  - "Your Email:": Text4
-    maxlength: 32
-  - "Your Address:": Text5
-    maxlength: 82
-  - "Today's Date:": Text1
+  - "What is Today's Date?:": Text1
     datatype: date
+  - "What is Your Full Name?:": Text2
+    maxlength: 32
+  - "What is Your Phone Number?:": Text3
+    maxlength: 32
+  - "What is Your Email Address?:": Text4
+    maxlength: 32
+  - "What is Your Home Address?:": Text5
+    maxlength: 82
 
 ---
-id: Court Information
-question: |
-  These questions are about the Court Case you have been called to.
+id: court_information
+question: | 
+  These questions ask you why you have been called to court.
 subquestion: |
-  Please tell us a bit about why you were called to court, and where you were called:
+  Please tell us a bit about why you were called to court:
 fields:
-  - "I am a Juror": Check_Box9
+  - "I am a Juror": Check_Box6
     datatype: yesno
   - "I am an Attorney/Legal Staff": Check_Box7
     datatype: yesno
   - "I am a Witness": Check_Box8
     datatype: yesno
-  - "I am a Party in the Case": Check_Box6
+  - "I am a Party in the Case": Check_Box9
     datatype: yesno
-  - "I am something else (explain):": Text10
-    maxlength: 44
+  - "I am something else": some_other_party
+    choices:
+    - yes
+    - no
+    required: false
+  - "Please explain why you are coming to court:": Text10
+    show if: 
+      variable: some_other_party
+      is: yes
+      
+--- 
+id: court_details 
+question: | 
+  These questions are about the court you have been called to.
+subquestion: |
+  Please tell us a bit about which court you were called to:
+fields:
   - "Name of Court:": Text11
     input type: dropdown
     choices:
@@ -188,14 +219,14 @@ fields:
       - Berkshire County Superior Court
       - Berkshire Probate and Family Court
       - Boston Juvenile Court 
-      - Brighton Division, Boston Municipal Court 
+      - Brighton Division, Boston Municipal Court
       - Bristol County Superior Court
-      - Bristol County Superior Court-Fall River 
-      - Bristol County Superior Court-New Bedford 
-      - Bristol Probate and Family Court 
-      - Brockton District Court 
+      - Bristol County Superior Court-Fall River
+      - Bristol County Superior Court-New Bedford
+      - Bristol Probate and Family Court
+      - Brockton District Court
       - Brockton Juvenile Court
-      - Brockton Probate and Family Court 
+      - Brockton Probate and Family Court
       - Brookline District Court
       - Cambridge District Court
       - Cambridge Juvenile Court
@@ -333,8 +364,8 @@ fields:
       - Uxbridge District Court
       - Waltham District Court
       - Waltham Juvenile Court
-      - Warhead District Court
-      - Warhead Juvenile Court
+      - Wareham District Court
+      - Wareham Juvenile Court
       - West Roxbury Division, Boston Municipal Court
       - West Roxbury Juvenile Court
       - Westborough District Court
@@ -351,10 +382,706 @@ fields:
       - Worcester Probate and Family Court
       - Wrentham District Court
   - "What date have you been called to court?:": Text12
-    datatype: date
+    datatype: date 
   - "What is your case name and docket number? i.e. Jones v. Smith 12345": Text13
     maxlength: 36
 ---
+code: |
+  court_data= {
+    "Attleboro District Court": {
+      "contact_info": "Phone: (508) 222-5900, ext. 313[BR]Fax: (508) 226-3916[BR]Email: virginia.richardson@jud.state.ma.us",
+      "coordinator": "Virginia Richardson"
+    },
+    "Attleboro Juvenile Court": {
+      "contact_info": "Phone: 508-222-5350 x348[BR]email: simone.desousa@jud.state.ma.us",
+      "coordinator": "Simone DeSousa"
+    },
+    "Ayer District Court": {
+      "contact_info": "Phone: 978-772-2100 x217[BR]email:  tina.ramos@jud.state.ma.us[BR]Fax: 978-772-5345",
+      "coordinator": "Tina Ramos"
+    },
+    "Barnstable County Superior Court": {
+      "contact_info": "Phone: 508-375-6683[BR]email:  christine.higginbotham@jud.state.ma.us[BR]Fax: 508-362-7754",
+      "coordinator": "Christine Higginbotham"
+    },
+    "Barnstable District Court": {
+      "contact_info": "Phone: 508-362-0274[BR]email:  louis.johson@jud.state.ma.us",
+      "coordinator": "Louise Johnson"
+    },
+    "Barnstable County Superior Court": {
+      "contact_info": "Phone: 508-375-6683[BR]email:  christine.higginbotham@jud.state.ma.us",
+      "coordinator": "Christine Higginbotham"
+    },
+    "Barnstable Juvenile Court": {
+      "contact_info": "Phone: 508-362-1389 x228[BR]email:  aldonna.lamarche@jud.state.ma.us",
+      "coordinator": "Aldonna Lamarche"
+    },
+    "Barnstable Probate and Family Court": {
+      "contact_info": "Phone: 508-375-6846[BR]email:  caitlin.mark@jud.state.ma.us",
+      "coordinator": "Caitlin G. Mark"
+    },
+    "Belchertown Juvenile Court": {
+      "contact_info": "Phone: 413-775-0014[BR]email:  carrie.mayer@jud.state.ma.us[BR]Fax: 413-775-9201",
+      "coordinator": "Carrie Mayer"
+    },
+    "Berkshire County Superior Court": {
+      "contact_info": "Phone: 413-399-7487 x7404[BR]email:  michele.dillon@jud.state.ma.us[BR]Fax: 413-442-9190",
+      "coordinator": "Michele Dillon"
+    },
+    "Berkshire Probate and Family Court": {
+      "contact_info": "Phone: 413-442-6941 x7207[BR]email:  alida.mcdarby@jud.state.ma.us[BR]Fax: 413-443-3430",
+      "coordinator": "Alida McDarby"
+    },
+    "Boston Juvenile Court": {
+      "contact_info": "Phone: 617-788-8525[BR]email:  diane.mcdermott@jud.state.ma.us[BR]Fax: 617-788-8991",
+      "coordinator": "Diane McDermott"
+    },
+    "Brighton Division, Boston Municipal Court": {
+      "contact_info": "Phone: 617-782-6540 x302[BR]email:  john.corbett@jud.state.ma.us[BR]Fax: 617-789-5345",
+      "coordinator": "John Corbett"
+    },
+    "Bristol County Superior Court": {
+      "contact_info": "Phone: 508-823-6588[BR]email:  aaron.strojny@jud.state.ma.us[BR]Fax: 508-880-6329",
+      "coordinator": "Aaron Strojny"
+    },
+    "Bristol County Superior Court-Fall River": {
+      "contact_info": "Phone: 508-491-3300[BR]email:  jennifer.sullivan@jud.state.ma.us[BR]Fax: 508-678-2414",
+      "coordinator": "Jennifer Sullivan"
+    },
+    "Bristol County Superior Court-New Bedford": {
+      "contact_info": "Phone: 508-491-3300[BR]email:  jennifer.sullivan@jud.state.ma.us[BR]Fax: 508-678-2414",
+      "coordinator": "Jennifer Sullivan"
+    },
+    "Bristol Probate and Family Court": {
+      "contact_info": "Phone: 508-977-6076[BR]email:  sharon.lemrise@jud.state.ma.us[BR]Fax: 508-977-6087",
+      "coordinator": "Sharon Lemrise"
+    },
+     "Brockton District Court": {
+      "contact_info": "Phone: 508-897-2717[BR]email: roderick.wilmore@jud.state.ma.us[BR]Fax: 508-587-6663",
+      "coordinator": "Roderick Wilmore"
+    },
+     "Brockton Juvenile Court": {
+      "contact_info": "Phone: 508-897-4929[BR]email:  carolyn.gomes@jud.state.ma.us[BR]Fax: 508-587-4998",
+      "coordinator": "Carolyn Gomes"
+    },
+    "Brockton Probate and Family Court": {
+      "contact_info": "Phone: 508-897-5439[BR]email: claudia.magnus@jud.state.ma.us[BR]Fax: 508-897-5435",
+      "coordinator": "Claudia Magnus"
+    },
+    "Brookline District Court": {
+      "contact_info": "Phone: 617-232-4660 x115[BR]email: kristin.ohara@jud.state.ma.us[BR]Fax: 617-739-0734",
+      "coordinator": "Kristin O'Hara"
+    },
+    "Cambridge District Court": {
+      "contact_info": "Phone: 781-306-2764[BR]email: domenic.strazzullo@jud.state.ma.us[BR]Fax: 781-395-2035",
+      "coordinator": "Domenic Strazzullo"
+    },
+    "Cambridge Juvenile Court": {
+      "contact_info": "Phone: 978-441-3151 x3[BR]email: jean.ward@jud.state.ma.us[BR]Fax: 978-441-2937",
+      "coordinator": "Jean Ward"
+    },
+     "Central Division, Boston Municipal Court": {
+      "contact_info": "Phone: 617-788-8668[BR]email: denise.donovan@jud.state.ma.us[BR]Fax: 617-788-8465",
+      "coordinator": "Denise Donovan"
+    },
+    "Central Housing Court - Dudley Session": {
+      "contact_info": "Phone: 508-831-2065[BR]email: kathleen.lagorce@jud.state.ma.us[BR]Fax: 508-792-1170",
+      "coordinator": "Katie LaGorce"
+    },
+     "Central Housing Court - Leominster Session": {
+      "contact_info": "Phone: 508-831-2065[BR]email: kathleen.lagorce@jud.state.ma.us[BR]Fax: 508-792-1170",
+      "coordinator": "Katie LaGorce"
+    },
+    "Central Housing Court - Marlborough Session": {
+      "contact_info": "Phone: 508-831-2065[BR]email: kathleen.lagorce@jud.state.ma.us[BR]Fax: 508-792-1170",
+      "coordinator": "Katie LaGorce"
+    },
+    "Central Housing Court - Worcester Session": {
+      "contact_info": "Phone: 508-831-2065[BR]email: kathleen.lagorce@jud.state.ma.us[BR]Fax: 508-792-1170",
+      "coordinator": "Katie LaGorce"
+    },
+     "Charlestown Division, Boston Municipal Court": {
+      "contact_info": "Phone: 617-242-5400 x238[BR]email: stephen.pearson@jud.state.ma.us[BR]Fax: 617-242-1677",
+      "coordinator": "Stephen Pearson"
+    },
+    "Chelsea District Court": {
+      "contact_info": "Phone: 617-660-9273[BR]email: carmine.diruzza@jud.state.ma.us[BR]Fax: 617-660-9213",
+      "coordinator": "Carmine DiRuzza"
+    },
+    "Chelsea Juvenile Court": {
+      "contact_info": "Phone: 617-660-9357[BR]email: colleen.moran@jud.state.ma.us[BR]Fax: 617-660-9213",
+      "coordinator": "Colleen Moran"
+    },
+    "Chicopee District Court": {
+      "contact_info": "Phone: 413-598-0099 x209[BR]email: carol.diBernardo@jud.state.ma.us[BR]Fax: 413-598-8268",
+      "coordinator": "Carol DiBernardo"
+    },
+    "Clinton District Court": {
+      "contact_info": "Phone: 978-368-7811 x239[BR]email: mary.rauscher@jud.state.ma.us[BR]Fax: 978-368-7827",
+      "coordinator": "Mary Rauscher"
+    },
+    "Concord District Court": {
+      "contact_info": "Phone: 978-369-0500 x623[BR]email: evan.gilman@jud.state.ma.us[BR]Fax: 978-371-2945",
+      "coordinator": "Evan Gilman"
+    },
+    "Dedham District Court": {
+      "contact_info": "Phone: 781-329-4777 x303[BR]email: eileen.mcdonnell@jud.state.ma.us[BR]Fax: 781-320-8249",
+      "coordinator": "Eileen M. McDonnell"
+    },
+     "Dedham Juvenile Court": {
+      "contact_info": "Phone: 781-329-1500[BR]email: charlene.ali@jud.state.ma.us[BR]Fax: 781-329-1649",
+      "coordinator": "Charlene Ali"
+    },
+    "Dorchester Division, Boston Municipal Court": {
+      "contact_info": "Phone: 617-288-9500 x225[BR]email: kimberly.macdonald@jud.state.ma.us[BR]Fax: 617-436-8250",
+      "coordinator": "Kim MacDonald"
+    },
+    "Dorchester Juvenile Court": {
+      "contact_info": "Phone: 617-288-9500 x225[BR]email: kimberly.macdonald@jud.state.ma.us[BR]Fax: 617-436-8250",
+      "coordinator": "Kim MacDonald"
+    },
+    "Dudley District Court": {
+      "contact_info": "Phone: 508-943-7123 x133[BR]email: joseph.moriarty@jud.state.ma.us[BR]Fax: 508-949-0015",
+      "coordinator": "Joseph Moriarty"
+    },
+    "Dudley Juvenile Court": {
+      "contact_info": "Phone: 508-943-7123[BR]email: william.george@jud.state.ma.us[BR]Fax: 508-949-0015",
+      "coordinator": "Will George"
+    },
+     "Dukes County Superior Court": {
+      "contact_info": "Phone: 508-627-4668[BR]email: deanna.ruiz@jud.state.ma.us[BR]Fax: 508-627-7571",
+      "coordinator": "Deanna L. Ruiz"
+    },
+    "Dukes Probate and Family Court": {
+      "contact_info": "Phone: 508-627-4703[BR]email: mallory.calamare@jud.state.ma.us[BR]Fax: 508-627-7664",
+      "coordinator": "Mallory Calamare"
+    },
+    "East Boston Division, Boston Municipal Court": {
+      "contact_info": "Phone: 617-569-7550 x125[BR]email: ann-marie.gioia@jud.state.ma.us[BR]Fax: 617-561-4988",
+      "coordinator": "Ann-Marie Gioia"
+    },
+    "East Brookfield District Court": {
+      "contact_info": "Phone: 508-885-6305 ext. 2711811[BR]email: lisa.skutnik@jud.state.ma.us[BR]Fax: 508-885-7623",
+      "coordinator": "Lisa Skutnik"
+    },
+    "Eastern Hampshire District Court": {
+      "contact_info": "Phone: 413-213-7659[BR]email: kathleen.mitchell@jud.state.ma.us[BR]Fax: 413-323-6803",
+      "coordinator": "Kathleen Mitchell"
+    },
+     "Eastern Housing Court": {
+      "contact_info": "Phone: 617-788-6523[BR]email: Natasha.woodley@jud.state.ma.us[BR]Fax: 617-788-8981",
+      "coordinator": "Natasha Woodley"
+    },
+    "Eastern Housing Court - Chelsea Session": {
+      "contact_info": "Phone: 617-788-6523[BR]email: Natasha.woodley@jud.state.ma.us[BR]Fax: 617-788-8981",
+      "coordinator": "Natasha Woodley"
+    },
+    "Eastern Housing Court - Middlesex Session": {
+      "contact_info": "Phone: 617-788-6523[BR]email: Natasha.woodley@jud.state.ma.us[BR]Fax: 617-788-8981",
+      "coordinator": "Natasha Woodley"
+    },
+    "Edgartown District Court": {
+      "contact_info": "Phone: (508) 627-3751",
+      "coordinator": "Clerk's Office"
+    },
+    "Edgartown Juvenile Court": {
+      "contact_info": "Phone: (508) 627-3751",
+      "coordinator": "Clerk's Office"
+    },
+     "Essex County Superior Court": {
+      "contact_info": "Phone: 978-825-4813[BR]email:  rebecca.matuza@jud.state.ma.us",
+      "coordinator": "Rebecca Matuza"
+    },
+     "Essex County Superior Court - Lawrence": {
+      "contact_info": "Phone: 978-242-1901[BR]email:  stefano.cornelio@jud.state.ma.us",
+      "coordinator": "Stefano J. Cornelio, Esq."
+    },
+   "Essex County Superior Court - Newburyport": {
+      "contact_info": "Phone: 978-462-4474[BR]email: dawn.mansfield@jud.state.ma.us[BR]Fax: 978-462-0432",
+      "coordinator": "Dawn Mansfield"
+    },
+    "Essex Probate and Family Court": {
+      "contact_info": "Phone: 978-744-1020[BR]email: maritza.mercedes@jud.state.ma.us[BR]Fax: 978-741-2957",
+      "coordinator": "Maritza Mercedes"
+    },
+     "Fall River District Court": {
+      "contact_info": "Phone: 508-491-3264[BR]email: maura.donovan@jud.state.ma.us[BR]Fax: 508-646-3597",
+      "coordinator": "Maura Donovan"
+    },
+    "Fall River Juvenile Court": {
+      "contact_info": "Phone: 508-676-0090 x116[BR]email: ann.pacheco@jud.state.ma.us[BR]Fax: 508-676-5303",
+      "coordinator": "Ann Pacheco"
+    },
+    "Fall River Probate and Family Court": {
+      "contact_info": "Phone: 508-977-6076 x116[BR]email: sharon.lemrise@jud.state.ma.us[BR]Fax: 508-977-6087",
+      "coordinator": "Sharon Lemrise"
+    },
+    "Falmouth District Court": {
+      "contact_info": "Phone: 508-495-1500[BR]email: tee.sadler@jud.state.ma.us[BR]Fax: 508-495-0291",
+      "coordinator": "Tee Sadler"
+    },
+    "Falmouth Juvenile Court": {
+      "contact_info": "Phone: 508-495-1500[BR]email: tee.sadler@jud.state.ma.us[BR]Fax: 508-495-0291",
+      "coordinator": "Tee Sadler"
+    },
+    "Fitchburg District Court": {
+      "contact_info": "Phone: 978-345-2111[BR]email: sharon.shosey@jud.state.ma.us[BR]Fax: 978-342-2461",
+      "coordinator": "Sharon Shosey"
+    },
+    "Fitchburg Juvenile Court": {
+      "contact_info": "Phone: 978-345-2111[BR]email: sharon.shosey@jud.state.ma.us[BR]Fax: 978-342-2461",
+      "coordinator": "Sharon Shosey"
+    },
+    "Framingham Juvenile Court": {
+      "contact_info": "Phone: 978-441-3151 x3[BR]email: jean.ward@jud.state.ma.us[BR]Fax: 978-441-2937",
+      "coordinator": "Jean Ward"
+    },
+    "Hadley Juvenile Court": {
+      "contact_info": "Phone: 413-775-0014[BR]email: carrie.mayer@jud.state.ma.us[BR]Fax: 413-775-9201",
+      "coordinator": "Carrie Mayer"
+    },
+    "Hampden County Superior Court": {
+      "contact_info": "Phone: 413-748-7650[BR]email: sheree.cope@jud.state.ma.us[BR]Fax: 413-737-1611",
+      "coordinator": "Sheree Cope"
+    },
+    "Hampden County Probate and Family Court": {
+      "contact_info": "Phone: 413-748-7770[BR]email: theresa.cullinan@jud.state.ma.us[BR]Fax: 413-781-5605",
+      "coordinator": "Theresa Cullinan"
+    },
+    "Hampshire County Superior Court": {
+      "contact_info": "Phone: 413-584-5810 x287[BR]email: kelley.devine@jud.state.ma.us[BR]Fax: 413-586-8217",
+      "coordinator": "Kelley Devine"
+    },
+    "Hampshire Probate and Family Court": {
+      "contact_info": "Phone: 413-587-5229[BR]email: mark.ames@jud.state.ma.us[BR]Fax: 413-584-1132",
+      "coordinator": "Mark Ames"
+    },
+    "Haverill District Court": {
+      "contact_info": "Phone: 978-521-7371[BR]email: katherine.lauranzano@jud.state.ma.us[BR]Fax: 978-373-4791",
+      "coordinator": "Katherine Lauranzano"
+    },
+    "Hingham District Court": {
+      "contact_info": "Phone: 781-749-7000 x201[BR]email: caroline.field@jud.state.ma.us[BR]Fax: 781-749-0941",
+      "coordinator": "Caroline Field"
+    },
+    "Hingham Juvenile Court": {
+      "contact_info": "Phone: 508-897-4929[BR]email: carolyn.gomes@jud.state.ma.us[BR]Fax: 508-897-4998",
+      "coordinator": "Carolyn Gomes"
+    },
+    "Holyoke District Court": {
+      "contact_info": "Phone: 413-493-0253[BR]email: azizah.yasin@jud.state.ma.us[BR]Fax: 413-533-7165",
+      "coordinator": "Azizah Yasin"
+    },
+    "Holyoke Juvenile Court": {
+      "contact_info": "Phone: 413-748-7705[BR]email: joyce.jerard@jud.state.ma.us[BR]Fax: 413-737-4383",
+      "coordinator": "Joyce Jerard"
+    },
+    "Ipswich District Court": {
+      "contact_info": "Phone: 978-499-6828[BR]email: cara.ring@jud.state.ma.us",
+      "coordinator": "Cara Ring"
+    },
+    "Lawrence District Court": {
+      "contact_info": "Phone: (978) 687-7184 ext: 5022332[BR]email: nicole.ouelette@jud.state.ma.us[BR]Fax:(978) 975-3171",
+      "coordinator": "Nicole Ouelette"
+    },
+    "Lawrence Juvenile Court": {
+      "contact_info": "Phone: (978) 725-4900[BR]email: marina.greeke@jud.state.ma.us[BR]Fax: (978) 725-3878",
+      "coordinator": "Marina Greeke"
+    },
+    "Lawrence Probate and Family Court": {
+      "contact_info": "Phone:  (978) 686-9692",
+      "coordinator": "Clerk's Office"
+    },
+    "Leominster District Court": {
+      "contact_info": "Phone: (978) 537-3722  ext. 105[BR]email: sheila.carter@jud.state.ma.us[BR]Fax: (978) 537-3970",
+      "coordinator": "Sheila Carter"
+    },
+    "Lowell District Court": {
+      "contact_info": "Phone: 978-442-3268[BR]email: meredith.mingolelli-cotter@jud.state.ma.us[BR]Fax: 978-937-2486",
+      "coordinator": "Meredith Mingolelli Cotter"
+    },
+    "Lowell Juvenile Court": {
+      "contact_info": "Phone:  978-441-3151 x3[BR]email:jean.ward@jud.state.ma.us[BR]Fax: 978-441-2937",
+      "coordinator": "Jean Ward"
+    },
+    "Lynn District Court": {
+      "contact_info": "Email: paul.hickey@jud.state.ma.us",
+      "coordinator": "Paul Hickey"
+    },
+    "Lynn Juvenile Court": {
+      "contact_info": "Phone: (978) 725-4900[BR]email: marina.greeke@jud.state.ma.us[BR]Fax: (978) 725-3878",
+      "coordinator": "Marina Greeke"
+    },
+    "Malden District Court": {
+      "contact_info": "Phone: (781) 322-7500 x219-1408[BR]email: cynthia.russell@jud.state.ma.us[BR]Fax: (781) 322-1604",
+      "coordinator": "Cynthia Russell"
+    },
+    "Marlborough District Court": {
+      "contact_info": "Phone: (508) 485-3700 x206[BR]email: james.fahey@jud.state.ma.us[BR]Fax: (508) 485-1575",
+      "coordinator": "James Fahey"
+    },
+    "Metro South Housing Court - Brockton Session": {
+      "contact_info": "Phone: (508) 897-2910[BR]email: catarina.andrade@jud.state.ma.us",
+      "coordinator": "Catarina Andrade"
+    },
+    "Metro South Housing Court - Canton Session": {
+      "contact_info": "Phone: (508) 897-2910[BR]email: catarina.andrade@jud.state.ma.us",
+      "coordinator": "Catarina Andrade"
+    },
+    "Middlesex County Superior Court": {
+      "contact_info": "Phone: 781-939-2700 x2802[BR]email: matthew.day@jud.state.ma.us[BR]Fax: 781-939-0872",
+      "coordinator": "Matt Day"
+    },
+    "Middlesex County Superior Court - Lowell": {
+      "contact_info": "Phone: 781-939-2700 x2802[BR]email: matthew.day@jud.state.ma.us[BR]Fax: 781-939-0872",
+      "coordinator": "Matt Day"
+    },
+    "Middlesex Probate and Family Court North - Lowell": {
+      "contact_info": "Phone: (978) 656-7744[BR]email: jillian.martin@jud.state.ma.us[BR]Fax: (617) 225-0781",
+      "coordinator": "Jillian Martin"
+    },
+    "Middlesex Probate and Family Court South - Woburn": {
+      "contact_info": "Phone: (781) 865-4072[BR]email: lauren.fraser@jud.state.ma.us[BR]Fax: (617) 225-0781",
+      "coordinator": "Lauren Fraser"
+    },
+    "Milford District Court": {
+      "contact_info": "Phone: 508-473-1260 x110[BR]email: thomas.carrigan@jud.state.ma.us[BR]Fax: 508-634-8477",
+      "coordinator": "Thomas Carrigan"
+    },
+    "Milford District Court": {
+      "contact_info": "Phone: 508-473-1260 x110[BR]email: thomas.carrigan@jud.state.ma.us[BR]Fax: 508-634-8477",
+      "coordinator": "Thomas Carrigan"
+    },
+    "Nantucket County Superior Court": {
+      "contact_info": "Phone: 508-228-2669[BR]email: susan.beamish@jud.state.ma.us[BR]Fax: 508-228-3662",
+      "coordinator": "Susan Beamish"
+    },
+    "Nantucket District Court": {
+      "contact_info": "Phone: 508-228-2669[BR]email: susan.beamish@jud.state.ma.us[BR]Fax: 508-228-3662",
+      "coordinator": "Susan Beamish"
+    },
+    "Nantucket Juvenile Court": {
+      "contact_info": "Email: barnstable-jccallctr@jud.state.ma.us",
+    },
+    "Nantucket Probate and Family Court": {
+      "contact_info": "Phone: (508) 228-2669[BR]email: sarah.maxwell@jud.state.ma.us[BR]Fax: (508) 228-3662",
+      "coordinator": "Sarah Maxwell"
+    },
+    "New Bedford District Court": {
+      "contact_info": "Phone: (508) 999-9377[BR]email: patrick.walsh@jud.state.ma.us[BR]Fax: (508) 990-8094",
+      "coordinator": "Patrick Walsh"
+    },
+    "New Bedford Juvenile Court": {
+      "contact_info": "Phone: 508-990-4608[BR]email: karin.butler@jud.state.ma.us[BR]Fax: 508-999-2917",
+      "coordinator": "Karin Butler"
+    },
+    "New Bedford Probate and Family Court": {
+      "contact_info": "Phone: 508-977-6076[BR]email: sharon.lemrise@jud.state.ma.us[BR]Fax: 508-977-6087",
+      "coordinator": "Sharon Lemrise"
+    },
+    "Newburyport District Court": {
+      "contact_info": "Phone: (978) 499-6828[BR]email: cara.ring@jud.state.ma.us",
+      "coordinator": "Cara Ring"
+    },
+    "Newburyport Juvenile Court": {
+      "contact_info": "Phone: (978) 725-4900[BR]email: marina.greeke@jud.state.ma.us[BR]Fax: (978) 725-3878",
+      "coordinator": "Marina Greeke"
+    },
+    "Newton District Court": {
+      "contact_info": "Phone: 617-243-7206[BR]email: kathleen.sheridan@jud.state.ma.us[BR]Fax: 617-243-7293 ",
+      "coordinator": "Kathleen Sheridan"
+    },
+    "Norfolk County Superior Court": {
+      "contact_info": "Phone: (781) 326-1600 x354[BR]email: mary.hickey@jud.state.ma.us[BR]Fax: (781) 326-3871",
+      "coordinator": "Mary Hickey"
+    },
+    "Norfolk Probate and Family Court": {
+      "contact_info": "Phone: (781) 830-1221[BR]email: jay.fielding@jud.state.ma.us[BR]Fax: (781) 830-4310",
+      "coordinator": "Jay Fielding"
+    },
+    "North Adams Juvenile Court": {
+      "contact_info": "Phone: 413-443-8597[BR]email: julie.salatino@jud.state.ma.us[BR]Fax: 413-443-8674",
+      "coordinator": "Julie Salatino"
+    },
+    "Northampton District Court": {
+      "contact_info": "Phone: 413-584-7400 x247[BR]email: linda.devine@jud.state.ma.us[BR]Fax: 413-584-7547",
+      "coordinator": "Linda Devine"
+    },
+    "Northeast Housing Court - Lawrence Session": {
+      "contact_info": "Phone: (978) 689-7833[BR]email: cynthia.kappotis@jud.state.ma.us",
+      "coordinator": "Cynthia Kappotis"
+    },
+    "Northeast Housing Court - Lowell Session": {
+      "contact_info": "Phone: (978) 689-7833[BR]email: cynthia.kappotis@jud.state.ma.us",
+      "coordinator": "Cynthia Kappotis"
+    },
+    "Northeast Housing Court - Lynn Session": {
+      "contact_info": "Phone: (978) 689-7833[BR]email: cynthia.kappotis@jud.state.ma.us",
+      "coordinator": "Cynthia Kappotis"
+    },
+    "Northeast Housing Court - Salem Session": {
+      "contact_info": "Phone: (978) 689-7833[BR]email: cynthia.kappotis@jud.state.ma.us",
+      "coordinator": "Cynthia Kappotis"
+    },
+    "Northeast Housing Court - Woburn Session": {
+      "contact_info": "Phone: (978) 689-7833[BR]email: cynthia.kappotis@jud.state.ma.us",
+      "coordinator": "Cynthia Kappotis"
+    },
+    "Northern Berkshire District Court": {
+      "contact_info": "Phone: 413-663-5339[BR]email: timothy.morey@jud.state.ma.us[BR]Fax: 413-663-3810",
+      "coordinator": "Timothy Morey"
+    },
+    "Orange District Court": {
+      "contact_info": "Phone: (978) 544-8277",
+      "coordinator": "Clerk's Office"
+    },
+    "Orange Juvenile Court": {
+      "contact_info": "Phone: 413-775-0014[BR]email: carrie.mayer@jud.state.ma.us[BR]Fax: 413-775-9201",
+      "coordinator": "Carrie Mayer"
+    },
+    "Orleans District Court": {
+      "contact_info": "Phone: 508-255-4700 x148[BR]email: marion.broidrick@jud.state.ma.us[BR]Fax: 508-240-5024",
+      "coordinator": "Marion Broiderick"
+    },
+    "Orleans Juvenile Court": {
+      "contact_info": "Phone: (508) 240-5044",
+      "coordinator": "Clerk's Office"
+    },
+    "Palmer District Court": {
+      "contact_info": "Phone: 413-283-8916[BR]email: yvonne.robinson@jud.state.ma.us[BR]Fax: 413-283-6775",
+      "coordinator": "Yvonne Robinson"
+    },
+    "Palmer Juvenile Court": {
+      "contact_info": "Phone: 413-748-7705[BR]email: joyce.jerard@jud.state.ma.us[BR]Fax: 413-737-4383",
+      "coordinator": "Joyce Jerard"
+    },
+    "Peabody District Court": {
+      "contact_info": "Phone: 978-532-3100 x303[BR]email: rosalind.faretra@jud.state.ma.us[BR]Fax: 978-531-8524",
+      "coordinator": "Rosalind Faretra"
+    },
+    "Pittsfield District Court": {
+      "contact_info": "Phone: 413-442-5468[BR]email: shannon.crouse@jud.state.ma.us[BR]Fax: 413-499-7327",
+      "coordinator": "Shannon Crouse"
+    },
+    "Pittsfield Juvenile Court": {
+      "contact_info": "Phone: 413-443-8597[BR]email: julie.salatino@jud.state.ma.us[BR]Fax: 413-443-8674",
+      "coordinator": "Julie Salatino"
+    },
+    "Plymouth County Superior Court": {
+      "contact_info": "Phone: (508) 747-8566[BR]email: ulisses.varela@jud.state.ma.us[BR]Fax: (508) 747-8192",
+      "coordinator": "Ulisses Varela"
+    },
+    "Plymouth County Superior Court - Brockton": {
+      "contact_info": "Phone: (508) 747-8566[BR]email: ulisses.varela@jud.state.ma.us[BR]Fax: (508) 747-8192",
+      "coordinator": "Ulisses Varela"
+    },
+    "Plymouth District Court": {
+      "contact_info": "Phone: (508) 747-8566[BR]email: angela.martin@jud.state.ma.us[BR]Fax: 508-830-9303",
+      "coordinator": "Angela Martin"
+    },
+    "Plymouth Juvenile Court": {
+      "contact_info": "Phone: 508-362-1389 x228[BR]email: aldonna.lamarche@jud.state.ma.us[BR]Fax: 508-362-8224",
+      "coordinator": "Aldonna Lamarche"
+    },
+    "Plymouth Probate and Family Court": {
+      "contact_info": "Phone: 508-897-5439[BR]email: claudia.magnus@jud.state.ma.us[BR]Fax: 508-584-4142",
+      "coordinator": "Claudia Magnus"
+    },
+    "Quincy Juvenile Court": {
+      "contact_info": "Phone: 781-329-1500[BR]email: charlene.ali@jud.state.ma.us[BR]Fax: 781-329-1649",
+      "coordinator": "Charlene Ali"
+    },
+    "Roxbury Division, Boston Municipal Court": {
+      "contact_info": "Phone: 617-427-7000 x415[BR]email: vilma.altamirano@jud.state.ma.us[BR]Fax: 617-442-2786",
+      "coordinator": "Vilma Altamirano"
+    },
+    "Salem District Court": {
+      "contact_info": "Phone: 978-825-3091[BR]email: andrew.stahnk@jud.state.ma.us[BR]Fax: 978-744-3211",
+      "coordinator": "Andrew Stahnke"
+    },
+    "Salem Juvenile Court": {
+      "contact_info": "Phone: (978) 725-4900[BR]email: marina.greeke@jud.state.ma.us[BR]Fax: (978) 725-3878",
+      "coordinator": "Marina Greeke"
+    },
+    "Somerville District Court": {
+      "contact_info": "Phone: 617-666-8000 x758[BR]email: donna.langill@jud.state.ma.us[BR]Fax: 617-666-4361",
+      "coordinator": "Donna Langill"
+    },
+    "South Boston Division, Boston Municipal Court": {
+      "contact_info": "Phone: (617) 268-9292 x244[BR]email: claire.smallcomb@jud.state.ma.us[BR]Fax: (617) 268-7321",
+      "coordinator": "Claire Smallcomb"
+    },
+    "Southeast Housing Court - Fall River": {
+      "contact_info": "Phone: 508-677-1505[BR]email: suzette.fagan-clarke@jud.state.ma.us[BR]Fax: 508-672-9716",
+      "coordinator": "Suzette Fagan Clarke"
+    },
+    "Southeast Housing Court - New Bedford Session": {
+      "contact_info": "Phone: 508-677-1505[BR]email: suzette.fagan-clarke@jud.state.ma.us[BR]Fax: 508-672-9716",
+      "coordinator": "Suzette Fagan Clarke"
+    },
+    "Southeast Housing Court - Plymouth Session": {
+      "contact_info": "Phone: 508-677-1505[BR]email: suzette.fagan-clarke@jud.state.ma.us[BR]Fax: 508-672-9716",
+      "coordinator": "Suzette Fagan Clarke"
+    },
+    "Southeast Housing Court - Taunton Session": {
+      "contact_info": "Phone: 508-677-1505[BR]email: suzette.fagan-clarke@jud.state.ma.us[BR]Fax: 508-672-9716",
+      "coordinator": "Suzette Fagan Clarke"
+    },
+    "Southeast Housing Court - Barnstable Session": {
+      "contact_info": "Phone: 508-677-1505[BR]email: suzette.fagan-clarke@jud.state.ma.us[BR]Fax: 508-672-9716",
+      "coordinator": "Suzette Fagan Clarke"
+    },
+   "Southern Berkshire District Court": {
+      "contact_info": "Phone: 413-528-3520 x3[BR]email: calandra.austin@jud.state.ma.us[BR]Fax: 413-528-0757",
+      "coordinator": "Calandra Austin"
+    },
+    "Springfield District Court": {
+      "contact_info": "Phone: 413-748-8643[BR]email: susanne.moultrie@jud.state.ma.us[BR]Fax: 413-739-5579",
+      "coordinator": "Susanne Moultrie"
+    },
+    "Springfield Juvenile Court": {
+      "contact_info": "Phone: 413-748-7705[BR]email: joyce.jerard@jud.state.ma.us[BR]Fax: 413-737-4383",
+      "coordinator": "Joyce Jerard"
+    },
+    "Stoughton District Court": {
+      "contact_info": "Phone: 781-344-2131 x217[BR]email: linda.siegel@jud.state.ma.us[BR]Fax: 781-297-9833",
+      "coordinator": "Linda Siegel"
+    },
+    "Stoughton Juvenile Court": {
+      "contact_info": "Phone: 781-329-1500[BR]email: charlene.ali@jud.state.ma.us[BR]Fax: 781-329-1649",
+      "coordinator": "Charlene Ali"
+    },
+    "Suffolk County Superior Court": {
+      "contact_info": "Phone: (617) 788-8110[BR]email: margaret.buckley@jud.state.ma.us[BR]Fax: (617) 788-8137",
+      "coordinator": "Margaret Buckley"
+    },
+    "Suffolk Probate and Family Court": {
+      "contact_info": "Phone: 617-788-8983[BR]email: kristen.antolini@jud.state.ma.us[BR]Fax: 617-788-8958",
+      "coordinator": "Kristen Antolini"
+    },
+    "Taunton District Court": {
+      "contact_info": "Phone: (508) 977-6159[BR]email: cheri.sigman@jud.state.ma.us[BR]Fax: (508) 967-1719",
+      "coordinator": "Cheri Sigman"
+    },
+    "Taunton Juvenile Court": {
+      "contact_info": "Phone: 508-977-4907[BR]email: susan.correia@jud.state.ma.us[BR]Fax: 508-977-0480",
+      "coordinator": "Susan Correia"
+    },
+    "Uxbridge District Court": {
+      "contact_info": "Phone: 508-278-2454 x115[BR]email: pamela.gervais@jud.state.ma.us[BR]Fax: 508-278-2929",
+      "coordinator": "Pamela Gervais"
+    },
+    "Waltham District Court": {
+      "contact_info": "Phone: 781-894-4500 x239[BR]email: darlene.gambucci@jud.state.ma.us[BR]Fax: 781-894-4360",
+      "coordinator": "Darlene Gambucci"
+    },
+    "Waltham Juvenile Court": {
+      "contact_info": "Phone: 978-441-3151 x3[BR]email: jean.ward@jud.state.ma.us[BR]Fax: 978-441-2937",
+      "coordinator": "Jean Ward"
+    },
+    "Wareham District Court": {
+      "contact_info": "Phone: 508-295-8300 x315[BR]email: sincere.goodman@jud.state.ma.us[BR]Fax: 508-291-6376",
+      "coordinator": "Sinceré Goodman"
+    },
+    "Wareham Juvenile Court": {
+      "contact_info": "Phone: 508-897-4929[BR]email: carolyn.gomes@jud.state.ma.us[BR]Fax: 508-897-4998",
+      "coordinator": "Carolyn Gomes"
+    },
+    "West Roxbury Division, Boston Municipal Court": {
+      "contact_info": "Phone: (617) 971-1231[BR]email: brian.doxtader@jud.state.ma.us",
+      "coordinator": "Brian K. Doxtader"
+    },
+    "West Roxbury Juvenile Court": {
+      "contact_info": "Phone: 617-971-1213[BR]email: maria.hidalgo@jud.state.ma.us[BR]Fax: 617-971-1213",
+      "coordinator": "Maria Hidalgo"
+    },
+    "Westborough District Court": {
+      "contact_info": "Phone: (508) 366-8266 ext. 310-2007[BR]email: kimberly.cancelli@jud.state.ma.us[BR]Fax: (508) 366-8268",
+      "coordinator": "Kimberly Cancelli"
+    },
+    "Western Housing Court - Greenfield Session": {
+      "contact_info": "Phone: 413-748-7838[BR]email: arlene.correa@jud.state.ma.us[BR]Fax: 413-732-4607",
+      "coordinator": "Arlene Correa"
+    },
+    "Western Housing Court - Hadley Session": {
+      "contact_info": "Phone: 413-748-7838[BR]email: arlene.correa@jud.state.ma.us[BR]Fax: 413-732-4607",
+      "coordinator": "Arlene Correa"
+    },
+    "Western Housing Court - Pittsfield Session": {
+      "contact_info": "Phone: 413-748-7838[BR]email: arlene.correa@jud.state.ma.us[BR]Fax: 413-732-4607",
+      "coordinator": "Arlene Correa"
+    },
+    "Western Housing Court - Springfield Session": {
+      "contact_info": "Phone: 413-748-7838[BR]email: arlene.correa@jud.state.ma.us[BR]Fax: 413-732-4607",
+      "coordinator": "Arlene Correa"
+    },
+    "Westfield District Court": {
+      "contact_info": "Phone: 413-568-8946[BR]email: robbin.conde@jud.state.ma.us[BR]Fax: 413-568-4863",
+      "coordinator": "Robbin Conde"
+    },
+    "Winchendon District Court": {
+      "contact_info": "Phone: 978-632-2373 x112[BR]email: kimberly.walsh@jud.state.ma.us[BR]Fax: 978-630-3902",
+      "coordinator": "Kimberly A. Walsh"
+    },
+    "Woburn District Court": {
+      "contact_info": "Phone: 781-935-4000 x236[BR]email: deborah.earl@jud.state.ma.us",
+      "coordinator": "Deborah Earl"
+    },
+    "Worcester County Superior Court": {
+      "contact_info": "Phone: 508-831-2347[BR]email: amanda.calocci@jud.state.ma.us[BR]Fax: 508-752-8127",
+      "coordinator": "Amanda Karalus"
+    },
+    "Worcester District Court": {
+      "contact_info": "Phone: (508) 831-2040[BR]email: darlene.perro@jud.state.ma.us[BR]Fax: (508) 797-0716",
+      "coordinator": "Darlene Perro"
+    },
+    "Worcester Juvenile Court": {
+      "contact_info": "Phone: 508-831-2481[BR]email: katherine.walsh@jud.state.ma.us[BR]Fax: 508-757-1230",
+      "coordinator": "Katherine Walsh"
+    },
+    "Worcester Probate and Family Court": {
+      "contact_info": "Phone: (508) 831-2241[BR]email: alicia.doherty@jud.state.ma.us",
+      "coordinator": "Alicia Doherty"
+    },
+    "Wrentham District Court": {
+      "contact_info": "Phone: 508-384-3106 ext. 229[BR]email: diane.duffey@jud.state.ma.us[BR]Fax: 508-384-1978",
+      "coordinator": "Diane Duffey"
+    },
+    "Franklin County Superior Court": {
+      "contact_info": "Email: brittney.smith@jud.state.ma.us",
+      "coordinator": "Brittney Smith"
+    },
+    "Framingham Probate and Family Court": {
+      "contact_info": "Phone: 413-775-7460[BR]email: brennan.mcguane@jud.state.ma.us[BR]Fax: 413-774-3829",
+      "coordinator": "Brennan McGuane"
+    },
+    "Gardner District Court": {
+      "contact_info": "Phone: 978-632-2373 x112[BR]email: kimberly.walsh@jud.state.ma.us[BR]Fax:  978-630-3902",
+      "coordinator": "Kimberly A. Walsh"
+    },
+    "Gloucester District Court": {
+      "contact_info": "Phone: 978-283-2620 x3007[BR]email: melissa.teixeira@jud.state.ma.us[BR]Fax: 978-283-8784",
+      "coordinator": "Melissa Joy Teixeira"
+    },
+    "Great Barrington Juvenile Court": {
+      "contact_info": "Phone: 413-528-3520 x3[BR]email: calandra.austin@jud.state.ma.us[BR]Fax: 413-528-0757",
+      "coordinator": "Calandra Austin"
+    },
+    "Greenfield District Court": {
+      "contact_info": "Phone: 413-774-7427[BR]email: robin.massa@jud.state.ma.us[BR]Fax: 413-774-5328",
+      "coordinator": "Robin Massa"
+    },
+    "Greenfield Juvenile Court": {
+      "contact_info": "Phone: 413-775-0014[BR]email: carrie.mayer@jud.state.ma.us[BR]Fax: 413-775-9201",
+      "coordinator": "Carrie Mayer"
+    },
+    "Hadley Juvenile Court": {
+      "contact_info": "Phone: 413-775-0014[BR]email: carrie.mayer@jud.state.ma.us[BR]Fax: 413-775-9201",
+      "coordinator": "Carrie Mayer"
+    },
+    
+  }
+--- 
 id: Continue
 question: |
   Continue
@@ -366,42 +1093,83 @@ id: Accommodations
 question: |
   Accommodations
 subquestion: |
-  Tell us about what accommodations you might need:
+  Tell us the accommodations you need:
 fields:
-  - "I need physical accommodations (like access to a parking lot, entrance, restroom, elevator, court room, etc.)": Check_Box14
+  - "I need physical accommodations. Examples: I need help accessing a parking lot. I need help at the entrance. I need a handicap restroom. I cannot take the stairs/I will need an elevator.": Check_Box14
+    choices:
+    - yes
+    - no
+  - "I need some other kind of help.": Check_Box15
+    choices: 
+    - yes
+    - no
+  - "I need an Assistive Listening Device.": Check_Box21
     datatype: yesno
-  - "Assistive Listening Devices": Check_Box15
+    show if: 
+      variable: Check_Box15
+      is: yes
+  - "I need Large Print": Check_Box16
     datatype: yesno
-  - "I need Large Print": Check_Box20
+    show if: 
+      variable: Check_Box15
+      is: yes    
+  - "I need Digital Audio Reading": Check_Box19
     datatype: yesno
-  - "I need Digital Audio Reading": Check_Box16
+    show if: 
+      variable: Check_Box15
+      is: yes
+  - "I need a Sign Language Interpreter": Check_Box20
     datatype: yesno
-  - "I need a Sign Language Interpreter": Check_Box19
+    show if: 
+      variable: Check_Box15
+      is: yes
+  - "I need translating/CART (Communication Access Real-Time Translation)": Check_Box17
     datatype: yesno
-  - "I need translating/CART (Communication Access Real-Time Translation)": Check_Box21
-    datatype: yesno
-  - "I need some other assistance": Check_Box17
-    datatype: yesno
-  - "The accommodation I need:": Text22
-    maxlength: 39
-  - "Why I need Accommodations:": Text26
-    input type: area
+    show if: 
+      variable: Check_Box15
+      is: yes
   - "I need something else": Check_Box18
     datatype: yesno
+    show if:
+      variable: Check_Box15
+      is: yes
+  - "I need:": Text22
+    maxlength: 39
+    required: false
+    show if: 
+      variable: Check_Box18
+      is: true
+  - "I need the accommodations because:": Text26
+    datatype: area
 ---
 id: All done
 question: |
   All done!
 subquestion: |
-  Please sign your name below (if you are filling out the form for someone else, please sign YOUR name). Please add the day/time you need the accommodations, and the case name and docket number again.
+  Please sign your name below and add the time and date when you will need accommodations. 
 fields:
-  - "Case Name & Docket Number:": Text12
-    maxlength: 20
-  - "Day and time needed:": Group25
-    maxlength: 24
+  - "Day needed:": Text23 
+    datatype: date
+     
+  - "Time needed:" : Text24
+    datatype: time
+    
   - "My Signature:": Text27
     maxlength: 37
 ---
+#id: next_steps
+question: |
+  Here are your next steps:
+subquestion: |
+  Great job! Now that you completed the form, you need to download and send it to:
+  
+  ${ court_data[Text11]["coordinator"]} [BR]
+  ${ court_data[Text11]["contact_info"]}
+  
+continue button field: court_instructions
+
+  
+--- 
 id: preview courtrequestforadaaccomodation
 question: |
   Preview your form before you sign it
@@ -419,7 +1187,7 @@ subquestion: |
 continue button field: courtrequestforadaaccomodation_preview_question    
 ---
 code: |
-  signature_fields = []
+  #signature_fields = []
 ---
 code: |
   # This is a placeholder for the addresses that will be searched
@@ -434,7 +1202,7 @@ question: |
 review:
   - Edit: Text1
     button: |
-      **Your Name:**:
+      **Your Full Name:**:
       ${ Text1 }
   - Edit: Text2
     button: |
@@ -520,10 +1288,10 @@ review:
     button: |
       **I need something else**:
       ${ word(yesno(Check_Box18)) }
-  - Edit: Group25
-    button: |
-      **Day and time needed:**:
-      ${ Group25 }
+ # - Group25- Edit: Group25
+ #   button: |
+ #     **Day and time needed:**:
+ #     ${ Group25 }
   - Edit: Text23
     button: |
       **Case Name:**:
@@ -549,9 +1317,11 @@ event: courtrequestforadaaccomodation_download
 question: |
   All done
 subquestion: |
-  Thank you ${users}. Your form is ready to download and deliver.
+  Great job ${Text2}! Now that you completed the form, you need to download and send it to:
   
-  View, download and send your form below. Click the "Edit answers" button to fix any mistakes.
+  ${ court_data[Text11]["coordinator"]} [BR]
+  ${ court_data[Text11]["contact_info"]}
+  [BR][BR]View, download and send your form below. Click the "Edit answers" button to fix any mistakes.
 
   ${ action_button_html(url_action('review_courtrequestforadaaccomodation'), label='Edit answers', color='info') }
   
@@ -565,7 +1335,7 @@ progress: 100
 ---
 # ALDocument objects specify the metadata for each template
 objects:
-  - courtrequestforadaaccomodation_Post_interview_instructions: ALDocument.using(title="Instructions", filename="courtrequestforadaaccomodation_next_steps.docx", enabled=True, has_addendum=False, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
+  - courtrequestforadaaccomodation_Post_interview_instructions: ALDocument.using(title="Instructions", filename="courtrequestforadaaccomodation_next_steps.md", enabled=True, has_addendum=False, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
   - courtrequestforadaaccomodation_attachment: ALDocument.using(title="Court ADA Accomodations Form", filename="courtrequestforadaaccomodation", enabled=True, has_addendum=True, default_overflow_message=AL_DEFAULT_OVERFLOW_MESSAGE)
 ---
 # Bundles group the ALDocuments into separate downloads, such as for court and for the user
@@ -612,8 +1382,8 @@ attachments:
       - "Group25": ${ Group25 }
       - "Group25": ${ Group25 }
       - "Text23": ${ Text23 }
-      - "Text24": ${ Text24 }
-      - "Text26": ${ attachment_name.safe_value("Text26") }
+      - "Text24": ${ format_time(Text24, format='h:mm')  }
+      - "Text26": ${ Text26 }
       - "Text27": ${ Text27 }
       - "Text28": ${ Text28 }
 ---
