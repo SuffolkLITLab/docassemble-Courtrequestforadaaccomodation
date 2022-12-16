@@ -21,7 +21,7 @@ data:
   al_weaver_version: "1.7.0"
   generated on: "2022-11-13"
   title: >-
-    Court ADA Accomodations Form
+    Court Accessbility/Accomodations Form
   short title: >-
     ADA Accomodations Form
   description: |-
@@ -77,14 +77,14 @@ code: |
   allowed_courts = interview_metadata["courtrequestforadaaccomodation"]["allowed courts"]
   nav.set_section("review_courtrequestforadaaccomodation")
   
-  understood_welcome
-  welcome
+  #understood_welcome
+  #welcome
   needs_accommodation 
   Text1
   court_data
   Text11
   Check_Box9
-  set_progress(25)
+  #set_progress(25)
   Continue
   Check_Box14
   Text12
@@ -95,7 +95,7 @@ code: |
   #Group25
   Text27
   #court_instructions
-  interview_order_courtrequestforadaaccomodation = True
+  interview_order_courtrequestforadaaccomodation = True  
 ---
 ###################### Main order ######################
 comment: |
@@ -120,26 +120,33 @@ comment: |
 id: Court_ADA_Accomodations_Form
 continue button field: courtrequestforadaaccomodation_intro
 question: |
-  Court ADA Accomodations Form
+  Court Accessbility/Accomodations Form
 subquestion: |
-  If you are headed to court and will need help or accommodations, you must send a form to the court's ADA Coordinator. This software will help by filling in the form with your answers to the questions. At the end you will be able to print out the completed form to turn in. Please make sure to answer all the questions.
+  If you are headed to court and will need help or accommodations, you must send a form to the court's Accommodations Coordinator. This software will help by filling in the form with the answers you give to the questions. At the end you will be able to print out the completed form to turn in.
   
-  You must turn in the finished form at least 72 hours before your court date.
-fields: 
- - "Do you understand what to do?": understood_welcome
-   choices: 
-   - Yes  
-   - No   
-   required: true
-validation code: |
-  if understood_welcome == "No": validation_error("Please go back and read the rules again.")
+  You must turn in the finished form at least **72 hours** before your court date.
+  
+   Please take some time to answer the questions on the next few pages. You will be able to change your answers at the end if you make a mistake. 
+under: |
+  Note: Under the Americans with Disabilities Act, courts are required to provide reasonable accommodations. 
+  
 ---
-id: Welcome
-question: |
-  Before we begin... 
-subquestion: |
-  Please take some time to answer the questions on the next few pages. You will be able to change your answers at the end if you make a mistake. 
-continue button field: welcome
+#fields: 
+# - "Do you understand what to do?": understood_welcome
+#   choices: 
+#   - Yes  
+#   - No   
+#   required: true
+#validation code: |
+#  if understood_welcome == "No": validation_error("Please go back and read the rules again.")
+
+---
+#id: Welcome
+#question: |
+#  Before we begin... 
+#subquestion: |
+#  Please take some time to answer the questions on the next few pages. You will be able to change your answers at the end if you make a mistake. 
+#continue button field: welcome
 ---
 id: needs_accommodation 
 question: |
@@ -155,12 +162,13 @@ fields:
     show if: 
       variable: needs_accommodation
       is: No, I am helping the person who needs accommodations.
+progress: 20
 ---
 id: General information
 question: |
-  General information
+  Your Personal Information
 subquestion: |
-  These questions are about the person who needs accommodations. 
+  These questions are about the **person who needs accommodations.** 
 fields:
   - "What is Today's Date?:": Text1
     datatype: date
@@ -172,11 +180,11 @@ fields:
     maxlength: 32
   - "What is Your Home Address?:": Text5
     maxlength: 82
-
+progress: 30
 ---
 id: court_information
 question: | 
-  These questions ask you why you have been called to court.
+  Your Role at Court
 subquestion: |
   Please tell us a bit about why you were called to court:
 fields:
@@ -198,10 +206,12 @@ fields:
       variable: some_other_party
       is: yes
       
+progress: 40    
+
 --- 
 id: court_details 
 question: | 
-  These questions are about the court you have been called to.
+  Court Details
 subquestion: |
   Please tell us a bit about which court you were called to:
 fields:
@@ -385,6 +395,7 @@ fields:
     datatype: date 
   - "What is your case name and docket number? i.e. Jones v. Smith 12345": Text13
     maxlength: 36
+progress: 50
 ---
 code: |
   court_data= {
@@ -1084,10 +1095,10 @@ code: |
 --- 
 id: Continue
 question: |
-  Continue
-subquestion: |
-  You are doing great! Almost done!
+  You are doing a great job! You are almost done!
+
 continue button field: Continue
+progress: 60
 ---
 id: Accommodations
 question: |
@@ -1141,6 +1152,7 @@ fields:
       is: true
   - "I need the accommodations because:": Text26
     datatype: area
+progress: 70
 ---
 id: All done
 question: |
@@ -1156,6 +1168,7 @@ fields:
     
   - "My Signature:": Text27
     maxlength: 37
+progress: 80
 ---
 #id: next_steps
 question: |
@@ -1167,7 +1180,7 @@ subquestion: |
   ${ court_data[Text11]["contact_info"]}
   
 continue button field: court_instructions
-
+progress: 100
   
 --- 
 id: preview courtrequestforadaaccomodation
