@@ -1171,6 +1171,7 @@ fields:
 progress: 80
 ---
 #id: next_steps
+id: "here are your next steps"
 question: |
   Here are your next steps:
 subquestion: |
@@ -1327,6 +1328,7 @@ review:
       ${ Text28 }
 ---
 event: courtrequestforadaaccomodation_download
+id: "all done"
 question: |
   All done
 subquestion: |
